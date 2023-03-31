@@ -6,6 +6,7 @@
 #include <sys/timeb.h>
 #include "../../common/mtx.h"
 #include "../../common/barrier.h"
+#include "../../m5/include/hooks.h" // Shiming
 
 #define MAX            100000000
 #define INT_MAX        100000000
@@ -206,6 +207,11 @@ void* do_work(void* args)
 //Main
 int main(int argc, char** argv)
 {
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __bench_begin(__crono_apsp);
+#endif
+
    int N = 0;
    int DEG = 0;
    FILE *file0 = NULL;
@@ -497,6 +503,11 @@ int main(int argc, char** argv)
       thread_arg[j].barrier    = &barrier;
    }
   
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __roi_begin();
+#endif
+
    printf("Largest Vertex:%d",largest); 
    //CPU clock
    struct timespec requestStart, requestEnd;
@@ -526,7 +537,12 @@ int main(int argc, char** argv)
 
    clock_gettime(CLOCK_REALTIME, &requestEnd);
    double accum = ( requestEnd.tv_sec - requestStart.tv_sec ) + ( requestEnd.tv_nsec - requestStart.tv_nsec ) / BILLION;
-   printf( "\nTime:%lf seconds\n", accum );
+   printf( "\nTime: %lf seconds\n", accum );
+
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __roi_end();
+#endif
 
    //printf("\ndistance:%d \n",D[N-1]);
 
@@ -538,6 +554,11 @@ int main(int argc, char** argv)
        fprintf(pfile,"\n %d %d ", i,comm[i]);
      }
    printf("\n");
+
+   // Shiming:
+#ifdef ENABLE_PARSEC_HOOKS
+   __bench_end(__crono_apsp);
+#endif
 
    return 0;
 }

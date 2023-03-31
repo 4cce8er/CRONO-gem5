@@ -5,6 +5,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include <string.h>
+#include "../../m5/include/hooks.h" // Shiming
 
 #define MAX            100000000
 #define INT_MAX        100000000
@@ -142,6 +143,10 @@ void* do_work(void* args)
 //Main 
 int main(int argc, char** argv)
 {
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __bench_begin(__crono_apsp);
+#endif
 
    FILE *file0 = NULL;
    FILE *f = NULL;
@@ -373,6 +378,11 @@ int main(int argc, char** argv)
       thread_arg[j].barrier    = &barrier;
    }
 
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __roi_begin();
+#endif
+
    //Start CPU clock
    struct timespec requestStart, requestEnd;
    clock_gettime(CLOCK_REALTIME, &requestStart);
@@ -400,8 +410,12 @@ int main(int argc, char** argv)
    //Read clock and print time
    clock_gettime(CLOCK_REALTIME, &requestEnd);
    double accum = ( requestEnd.tv_sec - requestStart.tv_sec ) + ( requestEnd.tv_nsec - requestStart.tv_nsec ) / BILLION;
-   printf( "\nTime:%lf seconds\n", accum );
+   printf( "\nTime: %lf seconds\n", accum );
 
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __roi_end();
+#endif
    //printf("\ndistance:%d \n",D[N-1]);
 
    //Print pageranks to file
@@ -413,6 +427,11 @@ int main(int argc, char** argv)
    }
    printf("\n");
    fclose(f1);
+
+   // Shiming:
+#ifdef ENABLE_PARSEC_HOOKS
+   __bench_end(__crono_apsp);
+#endif
 
    return 0;
 }

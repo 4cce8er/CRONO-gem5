@@ -7,6 +7,7 @@
 #include <getopt.h>
 #include "../../common/mtx.h"
 #include "../../common/barrier.h"
+#include "../../m5/include/hooks.h" // Shiming
 
 #define MAX            100000000
 #define INT_MAX        100000000
@@ -170,6 +171,11 @@ void* do_work(void* args)
 
 int main(int argc, char** argv)
 {
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __bench_begin(__crono_apsp);
+#endif
+
 	 /*int select_opt=0;
 	 int ca;
 	
@@ -448,6 +454,11 @@ int main(int argc, char** argv)
       thread_arg[j].barrier    = &barrier;
    }
 
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __roi_begin();
+#endif
+
    struct timespec requestStart, requestEnd;
    clock_gettime(CLOCK_REALTIME, &requestStart);
 
@@ -476,11 +487,21 @@ int main(int argc, char** argv)
    //Print Time Taken
    clock_gettime(CLOCK_REALTIME, &requestEnd);
    double accum = ( requestEnd.tv_sec - requestStart.tv_sec ) + ( requestEnd.tv_nsec - requestStart.tv_nsec ) / BILLION;
-   printf( "\nTime Taken:\n%lf seconds", accum );
+   printf( "\nTime: %lf seconds\n", accum );
+
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __roi_end();
+#endif
 
 	 long long count = 0;
    count = Total_Tri;
    printf("\nTriangles=%lld \n",count);
+
+   // Shiming:
+#ifdef ENABLE_PARSEC_HOOKS
+   __bench_end(__crono_apsp);
+#endif
 
    return 0;
 }

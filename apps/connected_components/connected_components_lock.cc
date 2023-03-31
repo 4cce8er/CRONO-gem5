@@ -5,6 +5,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include "../../common/mtx.h"
+#include "../../m5/include/hooks.h" // Shiming
 
 #define MAX            100000000
 #define INT_MAX        100000000
@@ -143,6 +144,11 @@ void* do_work(void* args)
 //Main
 int main(int argc, char** argv)
 {
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __bench_begin(__crono_apsp);
+#endif
+
    int N = 0;  //Graph vertices
    int DEG = 0; //edges per vertex
    FILE *file0 = NULL;
@@ -405,6 +411,11 @@ int main(int argc, char** argv)
       thread_arg[j].barrier    = &barrier;
    }
 
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __roi_begin();
+#endif
+
    //CPU clock
    struct timespec requestStart, requestEnd;
    clock_gettime(CLOCK_REALTIME, &requestStart);
@@ -433,7 +444,12 @@ int main(int argc, char** argv)
 
    clock_gettime(CLOCK_REALTIME, &requestEnd);
    double accum = ( requestEnd.tv_sec - requestStart.tv_sec ) + ( requestEnd.tv_nsec - requestStart.tv_nsec ) / BILLION;
-   printf( "\nTime Taken:\n%lf seconds\n", accum );
+   printf( "\nTime: %lf seconds\n", accum );
+
+   // Shiming:
+#ifdef ENABLE_HOOKS
+   __roi_end();
+#endif
 
 	 FILE * pfile;
 	    pfile = fopen("myfile.txt","w");
@@ -458,6 +474,11 @@ int main(int argc, char** argv)
      count += Unique[i];
    printf("\nUnique Components Count:%d",count);
    */
+
+   // Shiming:
+#ifdef ENABLE_PARSEC_HOOKS
+   __bench_end(__crono_apsp);
+#endif
 
    return 0;
 }
