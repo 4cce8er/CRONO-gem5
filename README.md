@@ -1,3 +1,8 @@
+# Shiming's modification to CRONO for gem5
+
+1) Added hooks file (like PARSEC) to use m5ops conveniently from source code
+
+2) Added run script for easier and more coherent execution of benchmarks
 
 CRONO v0.9 : A Benchmark Suite for Multithreaded Graph Algorithms Executing on Futuristic Multicores
 ====================================================================
@@ -54,3 +59,4 @@ Contact
 =======
 
 masab.ahmad@uconn.edu
+
