@@ -20,17 +20,51 @@ TARGETS=(
 )
 
 if [ "$#" -ne 3 ]; then
-    echo "Arg: [bm] [core_num]"
+    echo "Arg: [bm] [core_num] [input_size]"
     echo "Possible bm choices:"
     echo "${TARGETS[@]}"
+    echo "Possible core num:"
+    echo "2 4 8 16 32 64"
+    echo "Possible input size:"
+    echo "large medium small test"
     exit 1
 fi
 
-BM=$1
-CORE_NUM=$2
-INPUT_SIZE=$3
+BM=$1 # check later
 
-GRAPH_ARGS="524288 1024"
+CORE_NUM=$2
+case $CORE_NUM in
+    "2") ;;
+    "4") ;;
+    "8") ;;
+    "16") ;;
+    "32") ;;
+    "64") ;;
+    *)
+        echo "Illegal core num $CORE_NUM"
+        exit 1
+    ;;
+esac
+
+INPUT_SIZE=$3
+case $INPUT_SIZE in
+    "large")
+        GRAPH_ARGS="524288 1024"
+    ;;
+    "medium")
+        GRAPH_ARGS="262144 512"
+    ;;
+    "small")
+        GRAPH_ARGS="131072 256"
+    ;;
+    "test")
+        GRAPH_ARGS="1024 256"
+    ;;
+    *)
+        echo "Illegal input size $INPUT_SIZE"
+        exit 1
+    ;;
+esac
 
 FOLDER=""
 case $BM in
